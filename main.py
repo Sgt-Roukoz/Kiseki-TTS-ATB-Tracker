@@ -20,12 +20,15 @@ root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 # set window to be not resizable
 root.resizable(False, False)
 
-try:
-    from ctypes import windll
 
-    windll.shcore.SetProcessDpiAwareness(1)
-finally:
-    root.mainloop()
+if __name__ == "__main__":
+    try:
+        from ctypes import windll
+
+        #reduce blurryness
+        windll.shcore.SetProcessDpiAwareness(1)
+    finally:
+        root.mainloop()
 
 # actors = []
 
