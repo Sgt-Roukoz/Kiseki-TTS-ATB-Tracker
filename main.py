@@ -1,46 +1,44 @@
-import tkinter as tk
+import PySimpleGUI as sg
+from settings import *
 
-root = tk.Tk()
-root.title("Kiseki TTS ATB Tracker")
+ttk_style = 'vista'
+class TurnTracker:
 
-window_width = 400
-window_height = 600
+    def __init__(self):
+        sg.theme('SystemDefaultForReal')
+        self.actors = [["Ash", 20, 'None'], ["Sim", 30, 'Attack']]
+        self.actions =  ["Art", "Craft", "Move", "Attack", "Consumable", "Dead"]
+        window_layout = [
+            [sg.Listbox(self.actors, size=(20,10))],
+            [],
+            []
 
-# get the screen dimension
-screen_width = root.winfo_screenwidth()
-screen_height = root.winfo_screenheight()
+        ]
+        self.master = sg.Window('Kiseki Turn Tracker', window_layout, ttk_theme=ttk_style)
+    
+    def add_actor(self, name, spd):
+        if spd == "" or name == "":
+            self.label.config(text = "Invalid Input for Adding Actor")
+        else:
+            self.actors.append([name,int(spd),"None"])
+            self.label.config(text = "")
+    
+    def print_actors(self):
+        print(self.actors)
+    
+    #def update_listbox(self):
 
-# find the center point
-center_x = int(screen_width/2 - window_width / 2)
-center_y = int(screen_height/2 - window_height / 2)
+    def read(self):
+        self.master.read()
 
-# set the position of the window to the center of the screen
-root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
-
-# set window to be not resizable
-root.resizable(False, False)
 
 
 if __name__ == "__main__":
-    try:
-        from ctypes import windll
 
-        #reduce blurryness
-        windll.shcore.SetProcessDpiAwareness(1)
-    finally:
-        root.mainloop()
+    turn = TurnTracker()
 
-# actors = []
+    while True:
+        event, values = turn.read()
 
-# actor_num = int(input("Enter number of actors: "))
-
-# for i in range(actor_num):
-#     actor_name = input("Actor " + str(i) + " name: " )
-#     actor_SPD = int(input("Actor SPD: "))
-
-#     actors.append([actor_name, actor_SPD])
-
-# actors.sort(key=lambda x: x[1])
-
-
-# print(actors)
+        if event == sg.WIND_CLOSED:
+            break
