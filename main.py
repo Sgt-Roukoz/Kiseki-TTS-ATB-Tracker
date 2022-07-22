@@ -8,7 +8,7 @@ class TurnTracker:
     def __init__(self):
         sg.theme('SystemDefaultForReal')
         self.actors = []
-        self.actions =  ["Art", "Craft", "Move", "Attack", "Consumable", "Dead"]
+        self.actions =  ["Art", "Craft", "Move", "Attack", "Consumable"]
         window_layout = [
             [sg.Table(self.actors, headings = ['Name', 'Delay', 'Last Action'], justification = 'center', right_click_menu = ['&Right', ['Remove']], key = '-ACTORS-'), 
             sg.Button(button_text='Begin Combat', key = '-BEGINCOMBAT-')],
@@ -35,21 +35,21 @@ class TurnTracker:
             self._update_list()
     
     def _in_combat_add(self, name, spd):
-        pass # equation for adding actor in middle of combat
+        self.actors.insert(1, [name, int((self.actors[0][1] + self.actors[1][1])/2), 'None', int(spd)])
     
     def _out_combat_add(self, name, spd):
-        self.actors.append([name,int(spd),"None"])
+        self.actors.append([name, int(spd), "None", int(spd)])
     
     def _update_list(self):
+        self._sort_actors()
         self.master['-ACTORS-'].update(self.actors)
         
         if self.in_combat:
             self.master['-CURRENTACTOR-'].update(f'Current Actor: {self.actors[0][0]}')
     
     def begin_combat(self):
-        self.actors.sort(key=lambda x: x[1], reverse= True)
         for x in self.actors:
-            x[1] = int(100 * 20/x[1])
+            x[1] = int(100 * 20/x[3])
         
         self.in_combat = True
         self._update_list()
@@ -61,10 +61,18 @@ class TurnTracker:
         elif not self.in_combat:
             print('not in combat')
         else:
-            pass
+            self.actors[0][1] += int(100 * (int(delay)/self.actors[0][3]))
+            self.actors[0][2] = action
+
+            self._update_list()
+    
+    def _sort_actors(self):
+        self.actors.sort(key=lambda x: x[1], reverse = not self.in_combat)
 
     def end_combat(self):
-        pass
+        self.actors.clear()
+        self._update_list()
+        self.master['-BEGINCOMBAT-'].update(disabled = False)
 
     def _print_actors(self):
         print(self.actors)
